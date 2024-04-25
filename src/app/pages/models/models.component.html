@@ -1,1 +1,25 @@
-<p>models works!</p>
+<div>
+  <h1>Step 1: Choose your Model and color</h1>
+  <div [formGroup]="carModelForm">
+    <div class="inline">
+      <span>Model: </span>
+      <select name="model"
+              id="modelSelect"
+              formControlName="code">
+        <option *ngFor="let model of carModels" [value]="model.code">{{model.description}}</option>
+      </select>
+    </div>
+    <div class="inline" *ngIf="selectedCar">
+      <span>Color: </span>
+      <select name="color"
+              id="colorSelect"
+              formControlName="color">
+        <option *ngFor="let color of selectedCar!.colors" [value]="color.code">{{color.description}}</option>
+      </select>
+    </div>
+  </div>
+
+  <div *ngIf="carImagePath">
+    <img [src]="carImagePath" alt="Car Image">
+  </div>
+</div>
