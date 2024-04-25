@@ -1,1 +1,6 @@
-<p>stepper works!</p>
+<div class="inline" *ngFor="let step of steps">
+  <button [id]="step.id"
+          [ngClass]="step.disabled ? 'not-allowed' : ''"
+          [disabled]="step.disabled"
+          (click)="changeStep(step)">{{step.description}}</button>
+</div>
