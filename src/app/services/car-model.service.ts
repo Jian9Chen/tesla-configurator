@@ -21,7 +21,6 @@ export class CarModelService {
   }
 
   setSelectedCar(newSelectedCar: SelectedCar | null) {
-    console.log(newSelectedCar)
     this.selectedCarSubject.next(newSelectedCar);
   }
 
