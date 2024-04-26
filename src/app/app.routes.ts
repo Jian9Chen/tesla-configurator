@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import {canActivateCarConfiguration, canActivateSummary} from "./guards/guards";
 
 export const routes: Routes = [
   {
@@ -12,13 +13,13 @@ export const routes: Routes = [
   },
   {
     path: 'choose-options',
-    loadComponent: () => import('./pages/options/options.component').then(mod => mod.OptionsComponent)
-    // TODO set can activate
+    loadComponent: () => import('./pages/options/options.component').then(mod => mod.OptionsComponent),
+    canActivate: [canActivateCarConfiguration]
   },
   {
     path: 'summary',
-    loadComponent: () => import('./pages/price-summary/price-summary.component').then(mod => mod.PriceSummaryComponent)
-    // TODO set can activate
+    loadComponent: () => import('./pages/price-summary/price-summary.component').then(mod => mod.PriceSummaryComponent),
+    canActivate: [canActivateSummary]
   },
   {
     path: "**",
