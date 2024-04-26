@@ -25,7 +25,7 @@ export class CarModelService {
   }
 
   getAllModels() {
-    return this.httpClient.get<Car[]>("http://localhost:4200/models");
+    return this.httpClient.get<Car[]>("/models");
   }
 
 }

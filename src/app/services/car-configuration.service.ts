@@ -23,6 +23,6 @@ export class CarConfigurationService {
     this.selectedConfigurationSubject.next(configuration);
   }
   getAvailableConfigurations(modelCode: string) {
-    return this.httpClient.get<CarConfiguration>(`http://localhost:4200/options/${modelCode}`);
+    return this.httpClient.get<CarConfiguration>(`/options/${modelCode}`);
   }
 }
