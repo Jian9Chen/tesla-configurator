@@ -1,1 +1,28 @@
-<p>price-summary works!</p>
+<div>
+  <h1>Step 3: Summary</h1>
+  <div>
+    <h2>Your Tesla {{selectedCarModel.description}}</h2>
+    <div>
+      <h3>{{selectedConfiguration.config.description}}</h3>
+      <p>{{selectedConfiguration.config.price | currency}}</p>
+    </div>
+    <div>Range: {{selectedConfiguration.config.range}} - Max Speed: {{selectedConfiguration.config.speed}}</div>
+    <div>
+      <h3>{{selectedCarModel.color.description}}</h3>
+      <p>{{selectedCarModel.color.price | currency}}</p>
+    </div>
+    <div *ngIf="selectedConfiguration.towHitch">
+      <h3>Tow Hitch Package</h3>
+      <p>{{"1000" | currency}}</p>
+    </div>
+    <div *ngIf="selectedConfiguration.yoke">
+      <h3>Yoke Steering Wheel</h3>
+      <p>{{"1000" | currency}}</p>
+    </div>
+  </div>
+  <hr>
+  <div>
+    <h3>TOTAL COST</h3>
+    <p>{{totalPrice | currency}}</p>
+  </div>
+</div>
