@@ -38,7 +38,10 @@ export class ModelsComponent implements OnInit, OnDestroy {
       );
       this.subscriptions.push(
         this.carModelForm.get('code')!.valueChanges.subscribe(
-          carCode => {
+          (carCode: string) => {
+            if (carCode && this.selectedCar?.code && carCode !== this.selectedCar?.code) {
+              this.carConfigService.setSelectedConfiguration(null);
+            }
             this.selectedCar = this.carModels.find(car => car.code === carCode);
             this.carModelForm.get('color')!.setValue(null);
           }

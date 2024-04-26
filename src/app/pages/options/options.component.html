@@ -1,1 +1,25 @@
-<p>options works!</p>
+<div *ngIf="availableConfiguration">
+  <h1>Step 2: Select your config and options</h1>
+  <div [formGroup]="configForm">
+    <div>
+      <span>Model: </span>
+      <select name="config"
+              id="configSelect"
+              formControlName="id">
+        <option *ngFor="let config of availableConfiguration.configs" [value]="config.id">{{config.description}}</option>
+      </select>
+      <p *ngIf="selectedConfigDetail">Range: {{selectedConfigDetail.range}} - Max Speed: {{selectedConfigDetail.speed}} - Cost: {{selectedConfigDetail.price | currency}}</p>
+    </div>
+
+    <div *ngIf="configForm.get('towHitch')">
+      <span>Tow Hitch?</span>
+      <input type="checkbox" id="includeTow" name="tow" formControlName="towHitch">
+    </div>
+
+    <div *ngIf="configForm.get('yoke')">
+      <span>Yoke steering wheel?</span>
+      <input type="checkbox" id="includeYoke" name="yoke" formControlName="yoke">
+    </div>
+
+  </div>
+</div>
