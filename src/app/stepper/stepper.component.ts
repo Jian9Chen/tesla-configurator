@@ -3,6 +3,7 @@ import {NgClass, NgForOf} from "@angular/common";
 import {Step} from "../models/step.model";
 import {StepperService} from "../services/stepper.service";
 import {Subscription} from "rxjs";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-stepper',
@@ -19,7 +20,8 @@ export class StepperComponent implements OnDestroy {
   steps: Step[];
 
   private subscriptions: Subscription[] = [];
-  constructor(private stepperService: StepperService) {
+  constructor(private stepperService: StepperService,
+              private router: Router) {
     this.steps = [];
     this.steps.push(
       new Step({
@@ -84,7 +86,7 @@ export class StepperComponent implements OnDestroy {
   }
 
   changeStep(selectedStep: Step) {
-    // TODO navigation
+    this.router.navigate([selectedStep.route]);
   }
 
 }
