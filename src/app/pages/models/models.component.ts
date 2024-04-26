@@ -3,8 +3,9 @@ import {CarModelService} from "../../services/car-model.service";
 import {Car, SelectedCar} from "../../models/car.model";
 import {NgForOf, NgIf, NgOptimizedImage} from "@angular/common";
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule} from "@angular/forms";
-import {Subscription, switchMap, tap} from "rxjs";
+import {distinct, Subscription, switchMap, tap} from "rxjs";
 import {StepperService} from "../../services/stepper.service";
+import {CarConfigurationService} from "../../services/car-configuration.service";
 
 @Component({
   selector: 'app-models',
@@ -23,13 +24,12 @@ export class ModelsComponent implements OnInit, OnDestroy {
     carModelForm: FormGroup;
 
     selectedCar?: Car;
-    carImagePath?: string | null;
 
     private subscriptions: Subscription[] = [];
-    private readonly imageBasePath: string = "https://interstate21.com/tesla-app/images/";
 
     constructor(private carModelService: CarModelService,
                 private stepperService: StepperService,
+                private carConfigService: CarConfigurationService,
                 private formBuilder: FormBuilder) {
       this.carModelForm = this.formBuilder.group({
           code: new FormControl<string | null>(null),
@@ -46,7 +46,7 @@ export class ModelsComponent implements OnInit, OnDestroy {
       );
       this.subscriptions.push(
         this.carModelForm.get('color')!.valueChanges.subscribe(
-          colorCode => {
+          (colorCode: string) => {
             if (colorCode) {
               let selectedColor = this.selectedCar!.colors.find(color => color.code === colorCode);
               let selectedCar = new SelectedCar({
@@ -55,10 +55,8 @@ export class ModelsComponent implements OnInit, OnDestroy {
                 color: selectedColor!
               })
               this.carModelService.setSelectedCar(selectedCar);
-              this.carImagePath = `${this.imageBasePath}${selectedCar.code}/${selectedCar.color.code}.jpg`;
               this.stepperService.setCurrentStepCompleted(true);
             } else {
-              this.carImagePath = null;
               this.carModelService.setSelectedCar(null);
               this.stepperService.setCurrentStepCompleted(false);
             }
@@ -75,7 +73,7 @@ export class ModelsComponent implements OnInit, OnDestroy {
           let selectedCar = this.carModelService.getSelectedCarValue();
           if (selectedCar) {
             this.carModelForm.get('code')?.setValue(selectedCar.code);
-            this.carModelForm.get('color')?.setValue(selectedCar.color);
+            this.carModelForm.get('color')?.setValue(selectedCar.color.code);
           } else {
             this.carModelForm.get('code')?.setValue(null);
           }
