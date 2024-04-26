@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {StepperService} from "../../services/stepper.service";
 import {CarModelService} from "../../services/car-model.service";
 import {CarConfigurationService} from "../../services/car-configuration.service";
 import {SelectedCar} from "../../models/car.model";
@@ -22,16 +21,13 @@ export class PriceSummaryComponent implements OnInit {
 
   selectedCarModel: SelectedCar;
   selectedConfiguration: SelectedCarConfiguration;
-  constructor(private stepperService: StepperService,
-              private carModelService: CarModelService,
+  constructor(private carModelService: CarModelService,
               private carConfigService: CarConfigurationService) {
     this.selectedCarModel = carModelService.getSelectedCarValue()!;
     this.selectedConfiguration = carConfigService.getSelectedConfigurationValue()!;
   }
 
   ngOnInit(): void {
-    this.stepperService.setCurrentStepId("step3");
-    this.stepperService.setCurrentStepCompleted(true);
     this.computeTotalPrice();
   }
 

@@ -11,6 +11,10 @@ export class CarConfigurationService {
   private selectedConfigurationSubject: BehaviorSubject<SelectedCarConfiguration | null> = new BehaviorSubject<SelectedCarConfiguration | null>(null);
   constructor(private httpClient: HttpClient) { }
 
+  getSelectedConfigurationObservable() {
+    return this.selectedConfigurationSubject.asObservable();
+  }
+
   getSelectedConfigurationValue() {
     return this.selectedConfigurationSubject.value;
   }

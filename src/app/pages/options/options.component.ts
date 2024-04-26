@@ -6,7 +6,6 @@ import {SelectedCar} from "../../models/car.model";
 import {CarConfiguration, ConfigurationDetail, SelectedCarConfiguration} from "../../models/car.configuration.model";
 import {CurrencyPipe, NgForOf, NgIf} from "@angular/common";
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule} from "@angular/forms";
-import {StepperService} from "../../services/stepper.service";
 
 @Component({
   selector: 'app-options',
@@ -30,7 +29,6 @@ export class OptionsComponent implements OnInit, OnDestroy{
 
   constructor(private carConfigurationService: CarConfigurationService,
               private carModelService: CarModelService,
-              private stepperService: StepperService,
               private formBuilder: FormBuilder) {
     this.selectedCarModel = this.carModelService.getSelectedCarValue()!;
     this.configForm = this.formBuilder.group({
@@ -40,7 +38,6 @@ export class OptionsComponent implements OnInit, OnDestroy{
       this.configForm.get('id')!.valueChanges.subscribe(
         (id: number) => {
           this.selectedConfigDetail = this.availableConfiguration!.configs.find(config => config.id == id);
-          this.stepperService.setCurrentStepCompleted(true);
           this.updateSubject();
         }
       )
@@ -48,7 +45,6 @@ export class OptionsComponent implements OnInit, OnDestroy{
   }
 
   ngOnInit(): void {
-    this.stepperService.setCurrentStepId('step2');
     this.subscriptions.push(
       this.carConfigurationService.getAvailableConfigurations(this.selectedCarModel.code).subscribe(
         configurations => {
@@ -79,9 +75,6 @@ export class OptionsComponent implements OnInit, OnDestroy{
             this.configForm.get('id')?.setValue(configDetail.config.id, {emitEvent: false});
             this.configForm.get('towHitch')?.setValue(configDetail.towHitch, {emitEvent: false});
             this.configForm.get('yoke')?.setValue(configDetail.yoke, {emitEvent: false});
-            this.stepperService.setCurrentStepCompleted(true);
-          } else {
-            this.stepperService.setCurrentStepCompleted(false);
           }
         }
       )

@@ -3,8 +3,7 @@ import {CarModelService} from "../../services/car-model.service";
 import {Car, SelectedCar} from "../../models/car.model";
 import {NgForOf, NgIf, NgOptimizedImage} from "@angular/common";
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule} from "@angular/forms";
-import {distinct, Subscription, switchMap, tap} from "rxjs";
-import {StepperService} from "../../services/stepper.service";
+import {Subscription} from "rxjs";
 import {CarConfigurationService} from "../../services/car-configuration.service";
 
 @Component({
@@ -28,7 +27,6 @@ export class ModelsComponent implements OnInit, OnDestroy {
     private subscriptions: Subscription[] = [];
 
     constructor(private carModelService: CarModelService,
-                private stepperService: StepperService,
                 private carConfigService: CarConfigurationService,
                 private formBuilder: FormBuilder) {
       this.carModelForm = this.formBuilder.group({
@@ -40,6 +38,7 @@ export class ModelsComponent implements OnInit, OnDestroy {
         this.carModelForm.get('code')!.valueChanges.subscribe(
           (carCode: string) => {
             if (carCode && this.selectedCar?.code && carCode !== this.selectedCar?.code) {
+              // changed car model -> invalidate selected configurations
               this.carConfigService.setSelectedConfiguration(null);
             }
             this.selectedCar = this.carModels.find(car => car.code === carCode);
@@ -58,10 +57,8 @@ export class ModelsComponent implements OnInit, OnDestroy {
                 color: selectedColor!
               })
               this.carModelService.setSelectedCar(selectedCar);
-              this.stepperService.setCurrentStepCompleted(true);
             } else {
               this.carModelService.setSelectedCar(null);
-              this.stepperService.setCurrentStepCompleted(false);
             }
           }
         )
@@ -82,7 +79,6 @@ export class ModelsComponent implements OnInit, OnDestroy {
           }
         }
       );
-      this.stepperService.setCurrentStepId('step1');
     }
 
     ngOnDestroy(): void {

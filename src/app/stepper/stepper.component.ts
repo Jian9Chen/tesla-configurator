@@ -1,9 +1,10 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {NgClass, NgForOf} from "@angular/common";
 import {Step} from "../models/step.model";
-import {StepperService} from "../services/stepper.service";
 import {Subscription} from "rxjs";
 import {Router} from "@angular/router";
+import {CarModelService} from "../services/car-model.service";
+import {CarConfigurationService} from "../services/car-configuration.service";
 
 @Component({
   selector: 'app-stepper',
@@ -15,12 +16,12 @@ import {Router} from "@angular/router";
   templateUrl: './stepper.component.html',
   styleUrl: './stepper.component.scss'
 })
-export class StepperComponent implements OnDestroy {
-  currentStep?: Step;
+export class StepperComponent implements OnInit, OnDestroy {
   steps: Step[];
 
   private subscriptions: Subscription[] = [];
-  constructor(private stepperService: StepperService,
+  constructor(private carModelService: CarModelService,
+              private carConfigService: CarConfigurationService,
               private router: Router) {
     this.steps = [];
     this.steps.push(
@@ -29,7 +30,7 @@ export class StepperComponent implements OnDestroy {
         description: 'Step 1',
         index: 1,
         id: 'step1',
-        disabled: true
+        disabled: false
       }),
       new Step({
         route: 'choose-options',
@@ -46,39 +47,40 @@ export class StepperComponent implements OnDestroy {
         disabled: true
       })
     );
+  }
 
+  ngOnInit() {
     this.subscriptions.push(
-      this.stepperService.getCurrentStepIdObservable().subscribe(
-        stepId => this.currentStep = this.steps.find(step => step.id === stepId)
-      )
-    );
-
-    this.subscriptions.push(
-      this.stepperService.getCurrentStepCompleted().subscribe(
-        // completion is computed inside each page after the navigation
-        completed => {
-          if (completed) {
-            this.steps.forEach(step => {
-              // enable the next step and the previously completed
-              if (this.currentStep && (step.index - 1) <= this.currentStep.index) {
-                step.disabled = false;
-              } else {
-                step.disabled = true;
-              }
-            })
-          } else {
-            this.steps.forEach(step => {
-              // enable the previously completed
-              if (this.currentStep && step.index <= this.currentStep.index) {
-                step.disabled = false;
-              } else {
-                step.disabled = true;
-              }
-            })
-          }
+      this.carConfigService.getSelectedConfigurationObservable().subscribe(selectedConfig => {
+        if (selectedConfig) {
+          // config selected -> enable step 3
+          let step3 = this.steps.find(step => step.id === "step3")!;
+          step3.disabled = false;
+        } else {
+          // config not selected -> disable step 3
+          let step2 = this.steps.find(step => step.id === "step2")!;
+          this.updateSubsequentStepDisabledStatus(step2, true);
         }
-      )
-    )
+      })
+    );
+    this.subscriptions.push(
+      this.carModelService.getSelectedCarObservable().subscribe(selectedModel => {
+        if (selectedModel) {
+          // car model selected -> enable step 2
+          let step2 = this.steps.find(step => step.id === "step2")!;
+          step2.disabled = false;
+          if (this.carConfigService.getSelectedConfigurationValue()) {
+            // config selected -> enable step 3
+            let step3 = this.steps.find(step => step.id === "step3")!;
+            step3.disabled = false;
+          }
+        } else {
+          // model not selected -> disable step 2, step 3
+          let step1 = this.steps.find(step => step.id === "step1")!;
+          this.updateSubsequentStepDisabledStatus(step1, true);
+        }
+      })
+    );
   }
 
   ngOnDestroy(): void {
@@ -87,6 +89,14 @@ export class StepperComponent implements OnDestroy {
 
   changeStep(selectedStep: Step) {
     this.router.navigate([selectedStep.route]);
+  }
+
+  private updateSubsequentStepDisabledStatus(checkStep: Step, disabled: boolean) {
+    this.steps.forEach(step => {
+      if (step.index > checkStep.index) {
+        step.disabled = disabled;
+      }
+    });
   }
 
 }
